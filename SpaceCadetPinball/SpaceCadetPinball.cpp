@@ -3,6 +3,9 @@
 
 int main(int argc, char* argv[])
 {
+#ifdef __ORBIS__
+	ps4_platform_init();
+#endif
 	std::string cmdLine;
 	for (int i = 1; i < argc; i++)
 	{

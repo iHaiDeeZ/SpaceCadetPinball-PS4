@@ -1,0 +1,3 @@
+Base revisions of the PS4 patches
+SDL2        https://github.com/libsdl-org/SDL        release-2.32.10 (5d24957)  patches/sdl2-ps4.patch
+SDL2_mixer  https://github.com/libsdl-org/SDL_mixer  release-2.8.1 (unpatched, WAV only)

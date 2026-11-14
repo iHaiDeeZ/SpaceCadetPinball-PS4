@@ -37,6 +37,10 @@
 #include "SDL.h"
 #include <SDL_mixer.h>
 
+#ifdef __ORBIS__
+#include "ps4_platform.h" // Platform/PS4
+#endif
+
 // MIX_INIT_FLUIDSYNTH was renamed to MIX_INIT_MID in SDL_mixer v2.0.2
 // Older versions of SDL_mixer did not have SDL_MIXER_VERSION_ATLEAST
 constexpr int MIX_INIT_MID_Proxy =

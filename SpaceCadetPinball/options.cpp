@@ -68,7 +68,12 @@ optionsStruct options::Options
 			Msg::Menu1_New_Game,
 			{InputTypes::Keyboard, SDLK_F2},
 			{},
+#ifdef __ORBIS__
+			// Triangle on the PS4 (no keyboard there)
+			{InputTypes::GameController, SDL_CONTROLLER_BUTTON_Y}
+#else
 			{}
+#endif
 		},
 		{
 			"Toggle Pause",
@@ -121,11 +126,19 @@ optionsStruct options::Options
 		},
 	},
 	{"Sounds", true},
+#ifdef __ORBIS__
+	{"Music", true}, // the PS4 package brings its own MIDI instruments
+#else
 	{"Music", false},
+#endif
 	{"FullScreen", false},
 	{"Players", 1},
 	{"Screen Resolution", -1},
+#ifdef __ORBIS__
+	{"UI Scale", 2.0f}, // read from across the room on a 1080p TV
+#else
 	{"UI Scale", 1.0f},
+#endif
 	{"Uniform scaling", true},
 	{"Linear Filtering", true},
 	{"Frames Per Second", DefFps},
@@ -263,6 +276,9 @@ void options::toggle(Menu1 uIDCheckItem)
 		fullscrn::window_size_changed();
 		return;
 	case Menu1::Full_Screen:
+#ifdef __ORBIS__
+		return; // always full screen on the PS4
+#endif
 		Options.FullScreen ^= true;
 		fullscrn::set_screen_mode(Options.FullScreen);
 		return;

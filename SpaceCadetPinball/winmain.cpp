@@ -70,6 +70,9 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError());
 		return 1;
 	}
+#ifdef __ORBIS__
+	ps4_platform_after_sdl_init();
+#endif
 
 	pb::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 
@@ -111,8 +114,14 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
+#ifdef __ORBIS__
+	// settings, high scores and the player's own copy of the data in /data; the package's in /app0
+	auto prefPath = SDL_strdup(PS4_DATA_DIR);
+	auto basePath = SDL_strdup(PS4_APP_DIR);
+#else
 	auto prefPath = SDL_GetPrefPath("", "SpaceCadetPinball");
 	auto basePath = SDL_GetBasePath();
+#endif
 
 	// SDL mixer init
 	bool mixOpened = false, noAudio = strstr(lpCmdLine, "-noaudio") != nullptr;
@@ -197,6 +206,9 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				printf("Failed to load font: %s, using embedded font.\n", fileName);
 			io.Fonts->Build();
 		}
+#ifdef __ORBIS__
+		ps4ui::LoadFonts();
+#endif
 		ImGui_Render_Init(renderer);
 		ImGui::StyleColorsDark();
 
@@ -249,12 +261,17 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		{
 			Options.FullScreen = true;
 		}
-
+#ifdef __ORBIS__
+		// the window is the TV picture (1080p or 720p), the menu bar is replaced by the pause menu,
+		// frame rate from ps4.cfg (Platform/PS4/ps4_ui.cpp)
+		ps4ui::Init();
+#else
 		if (!Options.FullScreen)
 		{
 			auto resInfo = &fullscrn::resolution_array[fullscrn::GetResolution()];
 			SDL_SetWindowSize(MainWindow, resInfo->TableWidth, resInfo->TableHeight);
 		}
+#endif
 		SDL_ShowWindow(window);
 		fullscrn::set_screen_mode(Options.FullScreen);
 
@@ -377,13 +394,22 @@ void winmain::MainLoop()
 				ImGui_ImplSDL2_NewFrame();
 				ImGui_Render_NewFrame();
 				ImGui::NewFrame();
+#ifdef __ORBIS__
+				ps4ui::AfterNewFrame();
+#endif
 				RenderUi();
+#ifdef __ORBIS__
+				ps4ui::BeforeRender();
+#endif
 
 				SDL_RenderClear(Renderer);
 				// Alternative clear hack, clear might fail on some systems
 				// Todo: remove original clear, if save for all platforms
 				SDL_RenderFillRect(Renderer, nullptr);
 				render::PresentVScreen();
+#ifdef __ORBIS__
+				ps4ui::ShadeScreen();
+#endif
 
 				ImGui::Render();
 				ImGui_Render_RenderDrawData(ImGui::GetDrawData());
@@ -458,7 +484,12 @@ void winmain::RenderUi()
 	ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{});
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4{});
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+#ifdef __ORBIS__
+	// no menu bar on the PS4 (not even its "Menu" button): the pause menu has everything
+	if (false)
+#else
 	if (!Options.ShowMenu && ImGui::BeginMainMenuBar())
+#endif
 	{
 		if (ImGui::MenuItem("Menu"))
 		{
@@ -837,6 +868,15 @@ void winmain::RenderUi()
 
 int winmain::event_handler(const SDL_Event* event)
 {
+#ifdef __ORBIS__
+	// Options and the touch pad open and close the pause menu (Platform/PS4/ps4_ui.cpp)
+	if (event->type == SDL_CONTROLLERBUTTONDOWN && (event->cbutton.button == SDL_CONTROLLER_BUTTON_START ||
+		event->cbutton.button == SDL_CONTROLLER_BUTTON_TOUCHPAD) && !options::WaitingForInput())
+	{
+		ps4ui::MenuButtonPressed();
+		return 1;
+	}
+#endif
 	auto inputDown = false;
 	switch (event->type)
 	{

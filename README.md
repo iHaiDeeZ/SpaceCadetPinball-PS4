@@ -1,123 +1,181 @@
-<!-- markdownlint-disable-file MD033 -->
+<p align="center">
+  <img src="docs/images/banner.png" alt="Space Cadet Pinball for PS4" width="100%">
+</p>
 
-# SpaceCadetPinball
+<p align="center">
+  <a href="https://github.com/iHaiDeeZ/SpaceCadetPinball-PS4/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iHaiDeeZ/SpaceCadetPinball-PS4?label=release&color=9b7bff"></a>
+  <img alt="PS4 homebrew" src="https://img.shields.io/badge/PS4-homebrew-1f5fd6">
+  <img alt="Native port" src="https://img.shields.io/badge/native-port-40c4ff">
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-ff8ad4"></a>
+</p>
 
-## Summary
+<h3 align="center">The pinball table from Windows XP, on your PS4.</h3>
 
-Reverse engineering of `3D Pinball for Windows - Space Cadet`, a game bundled with Windows.
+<p align="center">
+  <a href="https://github.com/iHaiDeeZ/SpaceCadetPinball-PS4/releases/latest"><b>⬇ Get the latest release</b></a> ·
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#controls">Controls</a> ·
+  <a href="#the-pause-menu">Pause menu</a> ·
+  <a href="#faq">FAQ</a> ·
+  <a href="#thanks">Credits</a>
+</p>
 
-## How to play
+---
 
-Place compiled executable into a folder containing original game resources (not included).\
-Supports data files from Windows and Full Tilt versions of the game.
+## Overview
 
-## Known source ports
+Space Cadet Pinball for PS4 is a native port of
+[k4zmu2a's decompilation](https://github.com/k4zmu2a/SpaceCadetPinball) of *3D Pinball for Windows –
+Space Cadet*, the table that came with Windows. It runs as a normal app on a jailbroken PS4, plays with
+a DualShock 4, and replaces the PC's mouse menus with a console-style pause menu.
 
-| Platform           | Author          | URL                                                                                                        |
-| ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| PS Vita            | Axiom           | <https://github.com/suicvne/SpaceCadetPinball_Vita>                                                        |
-| Emscripten         | alula           | <https://github.com/alula/SpaceCadetPinball> <br> Play online: <https://alula.github.io/SpaceCadetPinball> |
-| Nintendo Switch    | averne          | <https://github.com/averne/SpaceCadetPinball-NX>                                                           |
-| webOS TV           | mariotaku       | <https://github.com/webosbrew/SpaceCadetPinball>                                                           |
-| Android (WIP)      | Iscle           | https://github.com/Iscle/SpaceCadetPinball                                                                 |
-| Nintendo Wii       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball                                                            |
-| Nintendo 3DS       | MaikelChan      | https://github.com/MaikelChan/SpaceCadetPinball/tree/3ds                                                   |
-| Nintendo DS        | Headshotnoby    | https://github.com/headshot2017/3dpinball-nds                                                              |
-| Nintendo Wii U     | IntriguingTiles | https://github.com/IntriguingTiles/SpaceCadetPinball-WiiU                                                  |
-| PlayStation 2      | Headshotnoby    | https://github.com/headshot2017/3dpinball-ps2                                                              |
-| Sega Dreamcast     | Headshotnoby    | https://github.com/headshot2017/3dpinball-dc                                                               |
-| MorphOS            | BeWorld         | https://www.morphos-storage.net/?id=1688897                                                                |
-| AmigaOS 4          | rjd324          | http://aminet.net/package/game/actio/spacecadetpinball-aos4                                                |
-| Android (WIP)      | fexed           | https://github.com/fexed/Pinball-on-Android                                                                |
+It is the game's own code, compiled for the PS4's CPU: no emulator. The picture is drawn at 1080p (or
+720p, which the PS4 scales up), and the table's sounds and MIDI music play through the PS4's audio.
 
-Platforms covered by this project: desktop Windows, Linux and macOS.
+You bring the game's files from your own copy of Windows. Nothing of Microsoft's is in the package.
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+## Highlights
 
-## Source
+**Made for a controller**
+- Flippers on both shoulder pairs: **L1 or L2** and **R1 or R2**.
+- **Cross** is the plunger: hold to pull it back, release to shoot.
+- Nudge the table with the d-pad. Every button can be changed in **Options → Button Assignment**.
 
-* `pinball.exe` from `Windows XP` (SHA-1 `2A5B525E0F631BB6107639E2A69DF15986FB0D05`) and its public PDB
-* `CADET.EXE` 32bit version from `Full Tilt! Pinball` (SHA-1 `3F7B5699074B83FD713657CD94671F2156DBEDC4`)
+**A console-style pause menu**
+- **Options** or the **touch pad** pauses the game and opens it: resume, new game, how to play,
+  options, high scores, about.
+- A **How to Play** page with the rules and every button, shown the first time the game starts.
+- Large text, drawn PlayStation button prompts, and a hint for the selected row.
 
-## Tools used
+**Picture and sound**
+- **1080p or 720p** (Options → Resolution). 720p draws 2.25 times fewer pixels.
+- **30 or 60 fps**, physics at 60, 120 or 240 steps a second, an optional FPS counter.
+- Smooth or sharp scaling, and with or without the table's own aspect ratio.
+- The table's music (`PINBALL.MID`) plays on a built-in synthesizer, with free instruments in the
+  package.
 
-`Ghidra`, `Ida`, `Visual Studio`
+## Getting started
 
-## What was done
+**You need:** a jailbroken PS4 with **GoldHEN**, an FTP client, and the game's files from Windows
+XP's 3D Pinball (or *Full Tilt! Pinball*'s Space Cadet table).
 
-* All structures were populated, globals and locals named.
-* All subs were decompiled, C pseudo code was converted to compilable C++. Loose (namespace?) subs were assigned to classes.
+1. Download `SpaceCadetPinball-iHaiDeeZ-vX.YY.pkg` from the
+   [latest release](https://github.com/iHaiDeeZ/SpaceCadetPinball-PS4/releases/latest) and install it
+   with GoldHEN's **Package Installer** (copy it to `/data/pkg` first).
+2. Copy the game's files into **`/data/SpaceCadetPinball/`** on the PS4 by FTP, all in that one
+   folder:
+   - Windows XP: everything in `C:\Program Files\Windows NT\Pinball\`: `PINBALL.DAT`, `FONT.DAT`,
+     `PINBALL.MID` and the `SOUND*.WAV` files.
+   - Full Tilt!: `CADET.DAT` and its sound files.
+3. Start **Space Cadet Pinball** from the home screen.
 
-## Compiling
+> **Tip:** if the files are missing, the game says so on screen and lists where it looked. Upper- or
+> lower-case file names both work.
 
-Project uses `C++11` and depends on `SDL2` libs.
+**Updating:** install the newer package over the old one. Your settings and high scores stay in
+`/data/SpaceCadetPinball/`.
 
-### On Windows
+## Controls
 
-Download and unpack devel packages for `SDL2` and `SDL2_mixer`.\
-Set paths to them in `CMakeLists.txt`, see suggested placement in `/Libs`.\
-Compile with Visual Studio; tested with 2019.
+| Button | Action |
+|---|---|
+| **L1** or **L2** | Left flipper |
+| **R1** or **R2** | Right flipper |
+| **Cross** (hold, release) | Plunger: launch the ball |
+| **D-pad ← / →** | Nudge the table left / right |
+| **D-pad ↑** | Nudge the table up |
+| **Triangle** | New game |
+| **Options** or **touch pad** | Pause menu |
 
-### On Linux
+In the menus: **d-pad** or left stick to move, **Cross** to pick, **← / →** to change a value,
+**Circle** to go back.
 
-Install devel packages for `SDL2` and `SDL2_mixer`.\
-Compile with CMake; tested with GCC 10, Clang 11.\
-To cross-compile for Windows, install a 64-bit version of mingw and its `SDL2` and `SDL2_mixer` distributions, then use the `mingwcc.cmake` toolchain.
+**How a game goes:** the ball starts on the plunger in the lane on the right. Launch it, keep it alive
+with the flippers, and hit targets to light missions (shown in the panel beside the table). You have
+three balls; nudging too often tilts the table and the flippers stop until the ball drains.
 
-[![Packaging status](https://repology.org/badge/tiny-repos/spacecadetpinball.svg)](https://repology.org/project/spacecadetpinball/versions) 
+## The pause menu
 
-Some distributions provide a package in their repository. You can use those for easier dependency management and updates.
+| Row | What it does |
+|---|---|
+| Resume | Back to the table |
+| New Game | Start over |
+| Launch Ball | Put the next ball on the plunger |
+| How to Play | The rules and every button |
+| Options | The settings below |
+| High Scores | The best five games |
+| About | Version and credits |
+| Quit Game | Close the app (asks first) |
 
-This project is available as Flatpak on [Flathub](https://flathub.org/apps/details/com.github.k4zmu2a.spacecadetpinball).
+**Options**
 
-### On macOS
+| Section | Rows |
+|---|---|
+| Audio | Sound Effects, Sound Volume, Music, Music Volume |
+| Display | Resolution (1080p / 720p), Frame Rate (30 / 60), Smooth Scaling, Sharp Pixels, Keep Aspect Ratio, Menu Text Size, Show FPS (and Table Detail with Full Tilt's data) |
+| Gameplay | Players (1-4), Physics Rate (60 / 120 / 240), Button Assignment |
 
-Install XCode (or at least Xcode Command Line Tools with `xcode-select --install`) and CMake.
+## Your files
 
-**HomeBrew**
+Everything lives in **`/data/SpaceCadetPinball/`**:
 
-You can easily install the build artifact by using `brew`.
+| File | What it is |
+|---|---|
+| `PINBALL.DAT`, `*.WAV`, ... | The game's files, which you copy there |
+| `imgui_pb.ini` | Settings, button assignment and high scores |
+| `ps4.cfg` | The PS4 settings: resolution, frame rate, FPS counter |
+| `log.txt`, `log-prev.txt` | What this run (and the one before) printed: useful in bug reports |
 
-```sh
-brew tap draftbrew/tap
-brew install --no-quarantine space-cadet-pinball
+## FAQ
+
+**The game says the .dat file is missing.** The files aren't in `/data/SpaceCadetPinball/`, or they
+are in a subfolder there. Put them directly in that folder.
+
+**There is no music.** Turn it on in **Options → Music**: the setting is off on the PC version, and a
+settings file from an older version keeps that. Full Tilt's table has no `PINBALL.MID`.
+
+**It isn't smooth.** Try **Options → Resolution → 720p** and turn **Smooth Scaling** off. **Show FPS**
+puts a counter in the corner.
+
+**How do I type my name for a high score?** You can't yet: there's no on-screen keyboard, so the
+default name is kept. Press Cross on **OK**.
+
+**Can I use the 3D Pinball files from a newer Windows?** Space Cadet shipped up to Windows XP. Any
+copy of those files works, as does Full Tilt! Pinball's.
+
+## Good to know
+
+- Drawn by the PS4's CPU (SDL's software renderer), not its GPU: the table is 2D, and this keeps the
+  port small and simple.
+- The PC version's menu bar is hidden on the PS4; everything it had that matters on a console is in
+  the pause menu.
+- One controller plays; up to four players take turns.
+
+## Building
+
+The port is the `ps4` branch of the decompilation with `Platform/PS4/` (video, pad, menus), small
+`#ifdef __ORBIS__` changes in the game's files, and `scripts/ps4/build-pinball.sh`. It builds in WSL
+with clang 21 on the OpenOrbis toolchain and **ps4-kit**, our shared PS4 runtime, which is not
+published yet. Design notes: [docs/ps4/DESIGN.md](docs/ps4/DESIGN.md).
+
+```bash
+scripts/ps4/build-pinball.sh deps                       # SDL2, SDL2_mixer, the music instruments
+PINBALL_NO_DATA=1 PINBALL_VERSION=01.00 scripts/ps4/build-pinball.sh
 ```
 
-Be aware that the flag `--no-quarantime` will disable macOS's Gatekeeper during installation.
+## Thanks
 
-**Manual compilation:**
+- **[k4zmu2a and contributors](https://github.com/k4zmu2a/SpaceCadetPinball)**: the decompilation this
+  port is built on. Their README is in [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md).
+- **Cinematronics and Maxis**: the original table (1995).
+- **[SDL](https://www.libsdl.org) and [SDL_mixer](https://github.com/libsdl-org/SDL_mixer)**, **[Dear ImGui](https://github.com/ocornut/imgui)**, the **[OpenOrbis](https://github.com/OpenOrbis) toolchain** and **GoldHEN**.
+- **freepats**: the music's instruments (GPL). **Exo 2** and **Orbitron**: the menus' fonts (SIL Open Font License).
 
-* **Homebrew**: Install the `SDL2`, `SDL2_mixer` homebrew packages.
-* **MacPorts**: Install the `libSDL2`, `libSDL2_mixer` macports packages.
+## License and disclaimer
 
-Compile with CMake. Ensure that `CMAKE_OSX_ARCHITECTURES` variable is set for either `x86_64` Apple Intel or `arm64` for Apple Silicon.
+The code is MIT, as the decompilation it builds on (see [LICENSE](LICENSE)); the fonts and freepats
+keep their own licenses (in the package next to them).
 
-Tested with: macOS Big Sur (Intel) with Xcode 13 & macOS Montery Beta (Apple Silicon) with Xcode 13.
-
-**Automated compilation:**
-
-Run the `build-mac-app.sh` script from the root of the repository. The app will be available in a DMG file named `SpaceCadetPinball-<version>-mac.dmg`.
-
-Tested with: macOS Ventura (Apple Silicon) with Xcode Command Line Tools 14 & macOS Big Sur on GitHub Runner (Intel) with XCode 13.
-
-## Plans
-
-* ~~Decompile original game~~
-* ~~Resizable window, scaled graphics~~
-* ~~Loader for high-res sprites from CADET.DAT~~
-* ~~Cross-platform port using SDL2, SDL2_mixer, ImGui~~
-* Full Tilt Cadet features
-* Localization support
-* Maybe: Support for the other two tables - Dragon and Pirate
-* Maybe: Game data editor
-
-## On 64-bit bug that killed the game
-
-I did not find it, decompiled game worked in x64 mode on the first try.\
-It was either lost in decompilation or introduced in x64 port/not present in x86 build.\
-Based on public description of the bug (no ball collision), I guess that the bug was in `TEdgeManager::TestGridBox`
+This project has no connection with Microsoft, Cinematronics, Maxis or Sony. *3D Pinball*, *Space
+Cadet*, *Windows* and *PlayStation* are trademarks of their owners. The package contains none of the
+game's files: use files from software you own.

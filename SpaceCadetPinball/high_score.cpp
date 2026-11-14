@@ -172,10 +172,13 @@ void high_score::RenderHighScoreDialog()
 					score = DlgData.Entry.Score;
 					ImGui::PushItemWidth(200);
 
+#ifndef __ORBIS__
+					// PS4: no keyboard to type into it; the pad starts on OK instead
 					if (ImGui::IsWindowAppearing())
 					{
 						ImGui::SetKeyboardFocusHere(0);
 					}
+#endif
 					if (ImGui::InputText("", DlgData.Entry.Name, IM_ARRAYSIZE(DlgData.Entry.Name),
 						ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
 					{
@@ -194,7 +197,11 @@ void high_score::RenderHighScoreDialog()
 			ImGui::EndTable();
 		}
 
-		if (ImGui::Button(pb::get_rc_string(Msg::GenericOk)) || textBoxSubmit)
+		const bool okPressed = ImGui::Button(pb::get_rc_string(Msg::GenericOk));
+#ifdef __ORBIS__
+		ImGui::SetItemDefaultFocus();
+#endif
+		if (okPressed || textBoxSubmit)
 		{
 			if (dlg_enter_name)
 			{

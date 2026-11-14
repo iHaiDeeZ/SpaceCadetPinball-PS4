@@ -300,3 +300,7 @@ _deps
 build.ninja
 # Build directory
 /build
+
+# PS4 port: console clips and packages stay local
+clips/
+out/

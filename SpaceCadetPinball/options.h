@@ -122,6 +122,7 @@ public:
 	static void ShowControlDialog();
 	static void RenderControlDialog();
 	static bool WaitingForInput() { return ControlWaitingForInput; }
+	static bool ControlDialogOpen() { return ShowDialog; }
 	static std::vector<GameBindings> MapGameInput(GameInput key);
 	static void ResetAllOptions();
 private:

@@ -770,7 +770,12 @@ std::string pb::make_path_name(const std::string& fileName)
 void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
 {
 	fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
+#ifdef __ORBIS__
+	// no system message boxes: drawn on the screen until Cross
+	ps4ui::ShowMessage(title, message);
+#else
 	SDL_ShowSimpleMessageBox(flags, title, message, winmain::MainWindow);
+#endif
 }
 
 float pb::BallToBallCollision(const ray_type& ray, const TBall& ball, TEdgeSegment** edge, float collisionDistance)

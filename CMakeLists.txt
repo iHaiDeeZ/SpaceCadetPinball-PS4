@@ -32,8 +32,19 @@ endif()
 # SDL2main is not needed
 set(SDL2_BUILDING_LIBRARY ON)
 
+option(PINBALL_PS4 "PS4 build on ps4-kit (scripts/ps4/build-pinball.sh)" OFF)
+if(PINBALL_PS4)
+    # SDL2 + SDL2_mixer built for the PS4 by scripts/ps4/build-pinball.sh deps
+    include($ENV{HOME}/ps4-kit/ps4-kit.cmake)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set(SDL2_INCLUDE_DIR ${PINBALL_PS4_SYSROOT}/include/SDL2)
+    set(SDL2_MIXER_INCLUDE_DIR ${PINBALL_PS4_SYSROOT}/include/SDL2)
+    set(SDL2_LIBRARY ${PINBALL_PS4_SYSROOT}/lib/libSDL2.a)
+    set(SDL2_MIXER_LIBRARY ${PINBALL_PS4_SYSROOT}/lib/libSDL2_mixer.a)
+else()
 find_package(SDL2 REQUIRED)
 FIND_PACKAGE(SDL2_mixer REQUIRED)
+endif()
 
 include_directories(${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
@@ -216,7 +227,30 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.16.0" OR ${CMAKE_VERSION} VERSION_EQUAL "
             )
 endif()
 
+if(PINBALL_PS4)
+    # keyword form: ps4-kit links with PRIVATE
+    target_link_libraries(SpaceCadetPinball PRIVATE ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+else()
 target_link_libraries(SpaceCadetPinball ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+endif()
+
+if(PINBALL_PS4)
+    set(PINBALL_PS4_VERSION "00.00" CACHE STRING "Package version, shown in the log")
+    target_sources(SpaceCadetPinball PRIVATE
+        Platform/PS4/ps4_main.cpp
+        Platform/PS4/ps4_video.cpp
+        Platform/PS4/ps4_pad.cpp
+        Platform/PS4/ps4_ui.cpp)
+    target_include_directories(SpaceCadetPinball PRIVATE Platform/PS4 SpaceCadetPinball)
+    target_compile_definitions(SpaceCadetPinball PRIVATE PINBALL_PS4_VERSION="${PINBALL_PS4_VERSION}")
+    target_link_libraries(SpaceCadetPinball PRIVATE -lScePad -lSceUserService -lSceAudioOut -lSceVideoOut -lSceSystemService)
+    # The kit wraps these, and nothing here calls the C library's own: without --undefined its member
+    # is never linked, the plain name stays an import and create-fself refuses the eboot.
+    foreach(fn openat fstatat unlinkat fchmodat utimensat realpath readlink statvfs fstatvfs getcwd fchdir)
+        target_link_options(SpaceCadetPinball PRIVATE --undefined=${fn})
+    endforeach()
+    ps4_kit_app(SpaceCadetPinball)
+endif()
 
 # On Windows, copy DLL to output
 if(WIN32)
